@@ -1,0 +1,18 @@
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+
+# Generated output files
+reviews_with_attributes.json
+delight_attributes_ranking.csv
+failed_reviews.txt
+clusters.txt
+results.txt
