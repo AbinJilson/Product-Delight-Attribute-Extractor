@@ -216,7 +216,7 @@ def load_evaluation_data(filepath: str) -> List[Dict[str, Any]]:
         logging.error(f"Error reading evaluation file {filepath}: {e}")
         return []
 
-def run_evaluation(evaluation_filepath: str):
+def run_evaluation(evaluation_filepath: str, report_filepath: str):
     """Runs the evaluation process against a ground-truth dataset."""
     logging.info(f"--- Starting Evaluation --- ")
     eval_samples = load_evaluation_data(evaluation_filepath)
@@ -277,42 +277,51 @@ def run_evaluation(evaluation_filepath: str):
                 "extracted": list(extracted_canonical), "missed": list(fn_set)
             })
 
-    logging.info("--- Evaluation Results ---")
+    # --- Generate Report --- #
+    report_lines = []
     precision = total_tp / (total_tp + total_fp) if (total_tp + total_fp) > 0 else 0
     recall = total_tp / (total_tp + total_fn) if (total_tp + total_fn) > 0 else 0
     f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
 
-    logging.info(f"Total True Positives:  {total_tp}")
-    logging.info(f"Total False Positives: {total_fp}")
-    logging.info(f"Total False Negatives: {total_fn}")
-    logging.info(f"Precision: {precision:.2%}")
-    logging.info(f"Recall:    {recall:.2%}")
-    logging.info(f"F1-Score:  {f1_score:.2%}")
+    report_lines.append("--- Evaluation Results ---")
+    report_lines.append(f"Total True Positives:  {total_tp}")
+    report_lines.append(f"Total False Positives: {total_fp}")
+    report_lines.append(f"Total False Negatives: {total_fn}")
+    report_lines.append(f"\nPrecision: {precision:.2%}")
+    report_lines.append(f"Recall:    {recall:.2%}")
+    report_lines.append(f"F1-Score:  {f1_score:.2%}")
 
-    logging.info("\n--- Analysis of Successes and Failures ---")
+    report_lines.append("\n\n--- Analysis of Successes and Failures ---")
     if success_examples:
-        logging.info("\n[SUCCESS EXAMPLES (Correct Matches)]")
+        report_lines.append("\n[SUCCESS EXAMPLES (Correct Matches)]")
         for ex in success_examples:
-            logging.info(f"  Review:    '{ex['review'][:80]}...'")
-            logging.info(f"  Expected:  {ex['expected']}")
-            logging.info(f"  Extracted: {ex['extracted']}")
-            logging.info(f"  MATCH:     {ex['match']}\n")
+            report_lines.append(f"  Review:    '{ex['review'][:80]}...'")
+            report_lines.append(f"  Expected:  {ex['expected']}")
+            report_lines.append(f"  Extracted: {ex['extracted']}")
+            report_lines.append(f"  MATCH:     {ex['match']}\n")
 
     if fp_examples:
-        logging.info("\n[FAILURE EXAMPLES (Incorrect Extractions)]")
+        report_lines.append("\n[FAILURE EXAMPLES (Incorrect Extractions)]")
         for ex in fp_examples:
-            logging.info(f"  Review:    '{ex['review'][:80]}...'")
-            logging.info(f"  Expected:  {ex['expected']}")
-            logging.info(f"  Extracted: {ex['extracted']}")
-            logging.info(f"  EXTRACTED BUT NOT EXPECTED: {ex['false_positives']}\n")
+            report_lines.append(f"  Review:    '{ex['review'][:80]}...'")
+            report_lines.append(f"  Expected:  {ex['expected']}")
+            report_lines.append(f"  Extracted: {ex['extracted']}")
+            report_lines.append(f"  EXTRACTED BUT NOT EXPECTED: {ex['false_positives']}\n")
 
     if fn_examples:
-        logging.info("\n[FAILURE EXAMPLES (Missed Attributes)]")
+        report_lines.append("\n[FAILURE EXAMPLES (Missed Attributes)]")
         for ex in fn_examples:
-            logging.info(f"  Review:    '{ex['review'][:80]}...'")
-            logging.info(f"  Expected:  {ex['expected']}")
-            logging.info(f"  Extracted: {ex['extracted']}")
-            logging.info(f"  MISSED (Expected but not extracted): {ex['missed']}\n")
+            report_lines.append(f"  Review:    '{ex['review'][:80]}...'")
+            report_lines.append(f"  Expected:  {ex['expected']}")
+            report_lines.append(f"  Extracted: {ex['extracted']}")
+            report_lines.append(f"  MISSED (Expected but not extracted): {ex['missed']}\n")
+
+    try:
+        with open(report_filepath, "w", encoding="utf-8") as f:
+            f.write("\n".join(report_lines))
+        logging.info(f"Evaluation report saved successfully to {report_filepath}")
+    except Exception as e:
+        logging.error(f"Failed to write evaluation report to {report_filepath}: {e}")
 
 def main(reviews_filepath: str, top_n: int, json_output_path: str, csv_output_path: str):
     reviews = load_reviews(reviews_filepath)
@@ -389,11 +398,12 @@ if __name__ == "__main__":
     parser.add_argument("--output-json", type=str, default="reviews_with_attributes.json", help="Path for the output JSON file.")
     parser.add_argument("--output-csv", type=str, default="delight_attributes_ranking.csv", help="Path for the output CSV file.")
     parser.add_argument("--evaluate", type=str, metavar="EVAL_FILE", help="Run in evaluation mode using the provided CSV file.")
+    parser.add_argument("--evaluation-report", type=str, default="evaluation_report.txt", help="Path for the output evaluation report file.")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
     if args.evaluate:
-        run_evaluation(args.evaluate)
+        run_evaluation(args.evaluate, args.evaluation_report)
     else:
         main(args.reviews_file, args.top_n, args.output_json, args.output_csv)
