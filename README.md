@@ -74,14 +74,19 @@ python main.py <path_to_reviews.json> --output-json <output.json> --output-csv <
 
 ### 2. Evaluating Model Performance
 
-This mode measures the tool's accuracy against a human-labeled CSV file.
+This mode measures the tool's accuracy against a human-labeled CSV file and generates a detailed report.
 
 ```bash
-python main.py --evaluate <path_to_evaluation.csv>
+python main.py --evaluate <path_to_evaluation.csv> --evaluation-report <report_path.txt>
 ```
 
-**Argument:**
+This command produces a file (e.g., `evaluation_report.txt`) containing:
+-   Overall metrics (Precision, Recall, F1-Score).
+-   A qualitative analysis with examples of successful matches, incorrect extractions (false positives), and missed attributes (false negatives).
+
+**Arguments:**
 - `--evaluate` (required): Path to the evaluation CSV file. The file must contain `body` and `delight_attribute` columns.
+- `--evaluation-report` (optional): Path for the output evaluation report file. Defaults to `evaluation_report.txt`.
 
 ## 🔬 Methodology
 
