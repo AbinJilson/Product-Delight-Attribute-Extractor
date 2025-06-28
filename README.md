@@ -2,7 +2,7 @@
 
 ![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![OpenAI](https://img.shields.io/badge/powered%20by-OpenAI-black.svg)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
 
 This CLI tool analyzes customer reviews to identify and rank positively mentioned product attributes, which we call "delight attributes." It uses OpenAI's GPT-4 model for intelligent attribute extraction and semantic clustering to group similar concepts, providing actionable insights into what customers love about a product.
 
