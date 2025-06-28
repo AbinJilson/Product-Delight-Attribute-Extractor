@@ -133,3 +133,29 @@ To handle synonyms and varied phrasing (e.g., "smell" vs. "fragrance"), we perfo
 - **Compound Attributes**: The tool handles compound attributes (e.g., "eco-friendly packaging") as single items, but their semantic clustering can be inconsistent.
 
 Potential improvements include fine-tuning the prompt, adjusting the clustering threshold, expanding the evaluation dataset, or experimenting with different embedding models.
+
+---
+
+## 🔮 Future Roadmap: A Fully Open-Source Vision
+
+While the current implementation leverages the power of OpenAI's GPT models for rapid and accurate extraction, the long-term vision for this project is to become a **completely free, open-source, and self-hosted solution**. This can be achieved by replacing the reliance on the OpenAI API with a custom-trained Named Entity Recognition (NER) model.
+
+### The Path Forward: Using spaCy
+
+The most viable path is to use a powerful NLP library like [**spaCy**](https://spacy.io/) to train a custom model to recognize `DELIGHT_ATTRIBUTE` entities in review text.
+
+**The development process would look like this:**
+
+1.  **Data Annotation**: Create a high-quality, labeled dataset where specific product attributes in review sentences are annotated. This is the most critical and labor-intensive step.
+2.  **Model Training**: Train a custom spaCy NER model on the annotated dataset. The model will learn the patterns, context, and phrasing associated with delight attributes specific to your domain.
+3.  **Integration**: Replace the `extract_attributes_with_openai` function with a new function that loads the trained spaCy model and uses it to predict entities from the review text.
+4.  **Open-Source Embeddings**: For clustering, replace OpenAI's embedding model with a high-performance open-source alternative from a library like `sentence-transformers`.
+
+### Why Pursue This Vision?
+
+-   **Zero Cost**: Eliminates all API costs, making the tool free to run at any scale.
+-   **Full Control & Ownership**: You own the model and can fine-tune it precisely for your specific domain, without being subject to changes in external APIs.
+-   **Speed and Efficiency**: A local, optimized NER model can be significantly faster than making network requests to an external API.
+-   **Privacy**: All data is processed locally, ensuring complete privacy.
+
+This roadmap transforms the tool from a powerful utility into a sustainable, independent, and highly specialized asset.
