@@ -131,6 +131,7 @@ To handle synonyms and varied phrasing (e.g., "smell" vs. "fragrance"), we perfo
 - **Over-eager `General Satisfaction`**: The model sometimes returns `General Satisfaction` even when a more specific attribute could be inferred. This could be addressed by further refining the system prompt.
 - **Abstract Concepts**: The model struggles to capture abstract concepts that aren't tied to specific keywords. This is a known limitation of zero-shot LLM extraction.
 - **Compound Attributes**: The tool handles compound attributes (e.g., "eco-friendly packaging") as single items, but their semantic clustering can be inconsistent.
+- **Failed Extractions**: Reviews that are neutral, negative, or contain praise too subtle for the model may not yield any attributes. These are logged to `failed_reviews.txt` for manual inspection.
 
 Potential improvements include fine-tuning the prompt, adjusting the clustering threshold, expanding the evaluation dataset, or experimenting with different embedding models.
 
